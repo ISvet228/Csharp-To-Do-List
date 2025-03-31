@@ -15,7 +15,8 @@ class ToDoList
 
         Console.Write("\n + Add Task\n " +
                       "\n - Delete Task\n " +
-                      "\n - Delete Task\n " +
+                      "\n e Edit Task\n " +
+                      "\n c Complete Task\n " +
                       "\nSelect Action: \n");
 
 
@@ -57,7 +58,11 @@ class ToDoList
             DeleteTask(toDoList);
         }
     }
-    private static void UpdateTask()
+    private static void CompleteTask(Dictionary<string, bool> toDoList)
+    {
+
+    }
+    private static void EditTask(Dictionary<string, bool> toDoList)
     {
 
     }
