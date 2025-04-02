@@ -47,7 +47,7 @@ class ToDoList
     }
     private static void ReadTasks()
     {
-        Console.Write("\nTask List: ");
+        Console.WriteLine("\nTask List: ");
         foreach (var task in toDoList) Console.WriteLine($"{task.Id}. {task.TaskName}");
         Console.WriteLine("Press Any Key...");
         Console.ReadKey();
@@ -67,6 +67,7 @@ class ToDoList
             else Console.WriteLine("Task Not Found");
         }
         else Console.WriteLine("Incorrect ID");
+        Console.WriteLine("Task Added. Press Any Key...");
         Console.ReadKey();
     }
     private static void DeleteTask()
@@ -83,6 +84,7 @@ class ToDoList
             else Console.WriteLine("Task Not Found");
         }
         else Console.WriteLine("Incorrect ID");
+        Console.WriteLine("Task Added. Press Any Key...");
         Console.ReadKey();
     }
 #endregion
