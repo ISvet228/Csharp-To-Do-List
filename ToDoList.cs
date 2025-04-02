@@ -1,85 +1,123 @@
-using System;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System;
 
-[Serializable]
 class ToDoList
 {
-    private static readonly string filePath = "ToDoListSave.bin";
+    private static readonly string filePath = "ToDoList.sus";
+    private static List<ToDoTask> toDoList = new();
+    private static int nextID = 1;
 
-    static void Main()
+    private static void Main()
     {
-        Dictionary<string, bool> toDoList = LoadTasks();
-        foreach (var task in toDoList) Console.WriteLine($"Task: {task.Key}, Is Done: {task.Value}");
-
-        Console.Write("\n + Add Task\n " +
-                      "\n - Delete Task\n " +
-                      "\n e Edit Task\n " +
-                      "\n c Complete Task\n " +
-                      "\nSelect Action: \n");
-
-
-        Console.Write("\nEnter New Tasks (empty line to finish): \n");
-        CreateTask(toDoList);
-
-        Console.Write("\nEdit Tasks? (Y/N): ");
-        if (Console.ReadLine().Equals("y", StringComparison.OrdinalIgnoreCase))
+        LoadTasks();
+        while (true)
         {
-            while (true)
+            Console.Clear();
+            Console.WriteLine("1. Create Task" +
+                "\n2. Read Tasks" +
+                "\n3. Update Task" + 
+                "\n4. Delete Task" +
+                "\n5. End Programm");
+            Console.Write("Enter Action Number: ");
+
+            string action = Console.ReadLine();
+
+            switch (action)
             {
-                Console.Write("\nEnter Task Name to Toggle: ");
-                string task = Console.ReadLine();
-
-                if (toDoList.ContainsKey(task)) toDoList[task] = !toDoList[task];
-                else Console.WriteLine("Task not found.");
-
-                Console.Write("Stop Editing? (Y/N): ");
-                if (Console.ReadLine().Equals("y", StringComparison.OrdinalIgnoreCase)) break;
+                case "1": CreateTask(); break;
+                case "2": ReadTasks(); break;
+                case "3": UpdateTask(); break;
+                case "4": DeleteTask(); break;
+                case "5": SaveTasks(); return;
+                default: Console.WriteLine("Incorrect Input!!!!"); break;
             }
         }
-        SaveTasks(toDoList);
     }
-    private static void CreateTask(Dictionary<string,bool> toDoList)
-    {
-        string task = Console.ReadLine();
-        if (!string.IsNullOrWhiteSpace(task))
-        {
-            toDoList[task] = false;
-            CreateTask(toDoList);
-        }
-    }
-    private static void DeleteTask(Dictionary<string, bool> toDoList)
-    {
-        string task = Console.ReadLine();
-        if (!string.IsNullOrWhiteSpace(task))
-        {
-            toDoList.Remove(task);
-            DeleteTask(toDoList);
-        }
-    }
-    private static void CompleteTask(Dictionary<string, bool> toDoList)
-    {
 
-    }
-    private static void EditTask(Dictionary<string, bool> toDoList)
+    #region CRUD
+    private static void CreateTask()
     {
-
+        Console.Write("\nEnter Task Name: ");
+        string taskName = Console.ReadLine();
+        toDoList.Add(new ToDoTask { Id = nextID++, TaskName = taskName });
+        Console.WriteLine("Task Added. Press Any Key...");
+        Console.ReadKey();
     }
+    private static void ReadTasks()
+    {
+        Console.Write("\nTask List: ");
+        foreach (var task in toDoList) Console.WriteLine($"{task.Id}. {task.TaskName}");
+        Console.WriteLine("Press Any Key...");
+        Console.ReadKey();
+    }
+    private static void UpdateTask()
+    {
+        Console.Write("Enter Task ID: ");
+        if (int.TryParse(Console.ReadLine(), out int id))
+        {
+            var task = toDoList.Find(TASK => TASK.Id == id);
+            if (task != null)
+            {
+                Console.Write("Enter New Name: ");
+                task.TaskName = Console.ReadLine();
+                Console.WriteLine("Task Updated");
+            }
+            else Console.WriteLine("Task Not Found");
+        }
+        else Console.WriteLine("Incorrect ID");
+        Console.ReadKey();
+    }
+    private static void DeleteTask()
+    {
+        Console.Write("Enter Task ID To Delete: ");
+        if (int.TryParse(Console.ReadLine(), out int id))
+        {
+            var task = toDoList.Find(TASK => TASK.Id == id);
+            if (task != null)
+            {
+                toDoList.Remove(task);
+                Console.WriteLine("Task Deleted");
+            }
+            else Console.WriteLine("Task Not Found");
+        }
+        else Console.WriteLine("Incorrect ID");
+        Console.ReadKey();
+    }
+#endregion
 
     #region Save/Load Functions
-    static Dictionary<string, bool> LoadTasks()
-    {
-        if (!File.Exists(filePath)) return new Dictionary<string, bool>();
-        using FileStream fileStream = new(filePath, FileMode.Open);
-        return (Dictionary<string, bool>)new BinaryFormatter().Deserialize(fileStream);
-    }
-    static void SaveTasks(Dictionary<string, bool> tasks)
+    static void SaveTasks()
     {
         using FileStream fileStream = new(filePath, FileMode.Create);
         BinaryFormatter binaryFormatter = new();
-        binaryFormatter.Serialize(fileStream, tasks);
-        Console.WriteLine("File Saved");
+        binaryFormatter.Serialize(fileStream, toDoList);
+    }
+    static void LoadTasks()
+    {
+        if (File.Exists(filePath))
+        {
+            try
+            {
+                using FileStream fileStream = new(filePath, FileMode.Open);
+                BinaryFormatter binaryFormatter = new();
+                toDoList = (List<ToDoTask>)binaryFormatter.Deserialize(fileStream);
+                nextID = toDoList.Count > 0 ? toDoList[^1].Id + 1 : 1;
+            }
+            catch(Exception exeption)
+            {
+                Console.WriteLine($"Error: {exeption.Message}");
+                toDoList = new();
+                nextID = 1;
+            }
+        }
     }
     #endregion
+}
+[Serializable]
+class ToDoTask
+{
+    public int Id;
+    public string TaskName;
 }
