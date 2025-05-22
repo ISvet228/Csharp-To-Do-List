@@ -62,7 +62,7 @@ class ToDoList
         if (int.TryParse(Console.ReadLine(), out int id))
         {
             var task = toDoList.Find(TASK => TASK.Id == id);
-            if (!task.Equals(null))
+            if (task.TaskName != null)
             {
                 Console.Write("Enter New Name: ");
                 task.TaskName = Console.ReadLine();
@@ -80,7 +80,7 @@ class ToDoList
         if (int.TryParse(Console.ReadLine(), out int id))
         {
             var task = toDoList.Find(TASK => TASK.Id == id);
-            if (!task.Equals(null))
+            if (task.TaskName != null)
             {
                 toDoList.Remove(task);
                 Console.WriteLine("Task Deleted");
