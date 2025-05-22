@@ -1,13 +1,17 @@
+#region Usings
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System;
+#endregion
 
 class ToDoList
 {
+    #region Variables
     private static readonly string filePath = "ToDoList.sus";
     private static List<ToDoTask> toDoList = new();
     private static int nextID = 1;
+    #endregion
 
     private static void Main()
     {
@@ -17,7 +21,7 @@ class ToDoList
             Console.Clear();
             Console.WriteLine("1. Create Task" +
                 "\n2. Read Tasks" +
-                "\n3. Update Task" + 
+                "\n3. Update Task" +
                 "\n4. Delete Task" +
                 "\n5. End Programm");
             Console.Write("Enter Action Number: ");
@@ -58,7 +62,7 @@ class ToDoList
         if (int.TryParse(Console.ReadLine(), out int id))
         {
             var task = toDoList.Find(TASK => TASK.Id == id);
-            if (task != null)
+            if (!task.Equals(null))
             {
                 Console.Write("Enter New Name: ");
                 task.TaskName = Console.ReadLine();
@@ -76,7 +80,7 @@ class ToDoList
         if (int.TryParse(Console.ReadLine(), out int id))
         {
             var task = toDoList.Find(TASK => TASK.Id == id);
-            if (task != null)
+            if (!task.Equals(null))
             {
                 toDoList.Remove(task);
                 Console.WriteLine("Task Deleted");
@@ -87,9 +91,10 @@ class ToDoList
         Console.WriteLine("Task Added. Press Any Key...");
         Console.ReadKey();
     }
-#endregion
+    #endregion
 
     #region Save/Load Functions
+#pragma warning disable SYSLIB0011
     static void SaveTasks()
     {
         using FileStream fileStream = new(filePath, FileMode.Create);
@@ -104,10 +109,10 @@ class ToDoList
             {
                 using FileStream fileStream = new(filePath, FileMode.Open);
                 BinaryFormatter binaryFormatter = new();
-                toDoList = (List<ToDoTask>)binaryFormatter.Deserialize(fileStream);
+                toDoList = binaryFormatter.Deserialize(fileStream) as List<ToDoTask>;
                 nextID = toDoList.Count > 0 ? toDoList[^1].Id + 1 : 1;
             }
-            catch(Exception exeption)
+            catch (Exception exeption)
             {
                 Console.WriteLine($"Error: {exeption.Message}");
                 toDoList = new();
@@ -115,10 +120,12 @@ class ToDoList
             }
         }
     }
+#pragma warning restore SYSLIB0011
     #endregion
 }
+
 [Serializable]
-class ToDoTask
+struct ToDoTask
 {
     public int Id;
     public string TaskName;
