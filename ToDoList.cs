@@ -19,16 +19,17 @@ class ToDoList
         while (true)
         {
             Console.Clear();
-            Console.WriteLine("1. Create Task" +
-                "\n2. Read Tasks" +
-                "\n3. Update Task" +
-                "\n4. Delete Task" +
-                "\n5. End Programm");
-            Console.Write("Enter Action Number: ");
+            Console.WriteLine(
+                  "-------------------" +
+                "\n| 1. Create Task  |" +
+                "\n| 2. Read Tasks   |" +
+                "\n| 3. Update Task  |" +
+                "\n| 4. Delete Task  |" +
+                "\n| 5. End Programm |" +
+                "\n-------------------");
+            Console.Write("\nEnter Action Number: ");
 
-            string action = Console.ReadLine();
-
-            switch (action)
+            switch (Console.ReadLine())
             {
                 case "1": CreateTask(); break;
                 case "2": ReadTasks(); break;
@@ -44,8 +45,7 @@ class ToDoList
     private static void CreateTask()
     {
         Console.Write("\nEnter Task Name: ");
-        string taskName = Console.ReadLine();
-        toDoList.Add(new ToDoTask { Id = nextID++, TaskName = taskName });
+        toDoList.Add(new ToDoTask { Id = nextID++, TaskName = Console.ReadLine() });
         Console.WriteLine("Task Added. Press Any Key...");
         Console.ReadKey();
     }
